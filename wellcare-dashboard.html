@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellcare — Intelligent Health System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #060910;
+  --bg2: #0d1520;
+  --bg3: #111d2e;
+  --card: #0f1b2b;
+  --card2: #152236;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --teal: #00d4b4;
+  --teal2: #00a896;
+  --teal-dim: rgba(0,212,180,0.12);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.12);
+  --red: #ff4d6d;
+  --red-dim: rgba(255,77,109,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --purple: #a78bfa;
+  --text: #e8f4f0;
+  --text2: #8ba8c4;
+  --text3: #4a6480;
+  --nav-h: 64px;
+  --r: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--teal2); border-radius: 2px; }
+
+/* ── NAVBAR ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(6,9,16,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+  color: var(--text);
+}
+.nav-logo-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--teal), var(--teal2));
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-icon svg { width: 18px; height: 18px; }
+
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+}
+.nav-link {
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 400; color: var(--text2);
+  cursor: pointer; transition: all .18s; border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.nav-link.active { color: var(--teal); background: var(--teal-dim); font-weight: 500; }
+
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 8px;
+  background: var(--teal-dim); border: 1px solid rgba(0,212,180,0.2);
+  font-size: 12px; color: var(--teal); font-weight: 500; cursor: pointer;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--teal);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+
+.btn-login {
+  padding: 8px 18px; border-radius: 8px;
+  background: var(--teal); color: #000; font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: all .18s; font-family: 'DM Sans', sans-serif;
+}
+.btn-login:hover { background: #00ffe6; transform: translateY(-1px); }
+
+/* ── MAIN LAYOUT ── */
+.main { padding-top: var(--nav-h); display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 20px 12px; position: fixed; top: var(--nav-h); bottom: 0;
+  overflow-y: auto; z-index: 50;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.sidebar-section {
+  font-size: 10px; font-weight: 600; color: var(--text3);
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 12px 8px 6px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px; border-radius: 9px;
+  font-size: 13px; color: var(--text2); cursor: pointer;
+  transition: all .15s; border: none; background: none; width: 100%;
+  font-family: 'DM Sans', sans-serif; text-align: left;
+}
+.sidebar-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sidebar-item.active { background: var(--teal-dim); color: var(--teal); font-weight: 500; }
+.sidebar-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.content {
+  margin-left: 220px; flex: 1; padding: 28px;
+  min-height: calc(100vh - var(--nav-h));
+}
+
+/* ── PAGES ── */
+.page { display: none; animation: fadeIn .3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+}
+.card2 {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+.page-sub { font-size: 13.5px; color: var(--text2); }
+
+/* ── GRID LAYOUTS ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 20px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-card.teal::before { background: linear-gradient(90deg,var(--teal),transparent); }
+.stat-card.amber::before { background: linear-gradient(90deg,var(--amber),transparent); }
+.stat-card.red::before { background: linear-gradient(90deg,var(--red),transparent); }
+.stat-card.green::before { background: linear-gradient(90deg,var(--green),transparent); }
+.stat-card.blue::before { background: linear-gradient(90deg,var(--blue),transparent); }
+
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; font-weight: 500; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+.stat-val.teal { color: var(--teal); }
+.stat-val.amber { color: var(--amber); }
+.stat-val.red { color: var(--red); }
+.stat-val.green { color: var(--green); }
+.stat-val.blue { color: var(--blue); }
+.stat-sub { font-size: 12px; color: var(--text2); }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.section-title span { font-size: 11px; color: var(--text3); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+/* ── BADGE / PILL ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+}
+.pill.green { background: var(--green-dim); color: var(--green); }
+.pill.amber { background: var(--amber-dim); color: var(--amber); }
+.pill.red { background: var(--red-dim); color: var(--red); }
+.pill.teal { background: var(--teal-dim); color: var(--teal); }
+.pill.blue { background: var(--blue-dim); color: var(--blue); }
+
+/* ── GOAL ROWS ── */
+.goal-item {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+}
+.goal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.goal-name { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.goal-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+.progress-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .8s ease; }
+
+/* ── MEAL CARDS ── */
+.meal-card {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.meal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.meal-name-row { display: flex; align-items: center; gap: 8px; }
+.meal-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.meal-title { font-size: 13px; font-weight: 500; }
+.meal-time { font-size: 11px; color: var(--text3); }
+.meal-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.meal-metric { background: var(--bg3); border-radius: 8px; padding: 8px 10px; }
+.meal-metric-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; }
+.meal-metric-val { font-size: 15px; font-weight: 600; }
+
+/* ── DAY CARD ── */
+.day-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px; margin-bottom: 18px;
+}
+.day-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+}
+.day-date { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+.day-score-row { display: flex; align-items: center; gap: 10px; }
+.day-score-label { font-size: 11px; color: var(--text2); }
+.day-score-val { font-size: 20px; font-weight: 700; font-family: 'Syne', sans-serif; }
+.meals-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+/* ── SCORE RING ── */
+.score-ring-wrap { display: flex; align-items: center; justify-content: center; position: relative; }
+.score-ring-wrap canvas { position: absolute; }
+.score-ring-inner { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; text-align: center; z-index: 1; }
+.score-ring-inner small { display: block; font-size: 11px; color: var(--text2); font-family: 'DM Sans', sans-serif; font-weight: 400; margin-top: 2px; }
+
+/* ── CHART CONTAINER ── */
+.chart-wrap { position: relative; height: 180px; }
+.chart-wrap-tall { position: relative; height: 240px; }
+
+/* ── RECOMMENDATION CARD ── */
+.rec-card {
+  background: linear-gradient(135deg, rgba(0,212,180,0.08), rgba(0,168,150,0.04));
+  border: 1px solid rgba(0,212,180,0.2); border-radius: var(--r); padding: 18px;
+}
+.rec-title { font-size: 13px; font-weight: 600; color: var(--teal); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.rec-body { font-size: 13px; color: var(--text2); line-height: 1.75; }
+.rec-actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+.rec-action {
+  font-size: 12px; padding: 5px 12px; border-radius: 6px;
+  background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(0,212,180,0.25);
+  cursor: pointer; transition: all .15s;
+}
+.rec-action:hover { background: rgba(0,212,180,0.2); }
+
+/* ── TELEGRAM PANEL ── */
+.tg-card {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
+  border: 1px solid rgba(59,130,246,0.2); border-radius: var(--r); padding: 20px;
+}
+.tg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.tg-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--blue-dim); display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.tg-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); margin-top: 3px; }
+.tg-connected { color: var(--green); font-weight: 500; }
+.tg-preview {
+  background: var(--bg3); border-radius: 10px; padding: 14px;
+  font-size: 12.5px; color: var(--text2); line-height: 1.7; margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.tg-preview strong { color: var(--text); }
+.tg-btn {
+  width: 100%; padding: 11px; border-radius: 9px;
+  background: var(--blue); color: #fff; font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: all .18s; font-family: 'DM Sans', sans-serif;
+}
+.tg-btn:hover { background: #5b9cf6; transform: translateY(-1px); }
+.tg-btn.danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,77,109,.3); }
+
+/* ── USER ROW ── */
+.user-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border-radius: 10px; background: var(--card2); border: 1px solid var(--border);
+  margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
+}
+.user-row:hover { border-color: var(--border2); }
+.user-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--teal-dim); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--teal); flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 500; }
+.user-meta { font-size: 11px; color: var(--text3); }
+.user-scores { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.score-chip { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+
+/* ── WEEKLY REPORT TABLE ── */
+.report-table { width: 100%; border-collapse: collapse; }
+.report-table th {
+  text-align: left; padding: 10px 12px; font-size: 11px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em; font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+.report-table td {
+  padding: 11px 12px; font-size: 13px; color: var(--text2);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.report-table tr:hover td { background: rgba(255,255,255,0.02); }
+.trend-up::after { content: '↑'; color: var(--red); margin-left: 4px; font-size: 11px; }
+.trend-down::after { content: '↓'; color: var(--green); margin-left: 4px; font-size: 11px; }
+.trend-flat::after { content: '→'; color: var(--text3); margin-left: 4px; font-size: 11px; }
+
+/* ── 3D BODY VISUAL ── */
+.body-visual {
+  position: relative; width: 100%; height: 280px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.body-canvas { width: 100%; height: 100%; }
+
+/* ── GLUCOSE RING ── */
+.glucose-visual {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 20px;
+}
+.spike-ring {
+  position: relative; width: 160px; height: 160px;
+  display: flex; align-items: center; justify-content: center;
+}
+.spike-ring canvas { position: absolute; }
+.spike-val {
+  font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
+  text-align: center; z-index: 1; line-height: 1;
+}
+.spike-unit { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.spike-label { font-size: 12px; color: var(--text2); margin-top: 12px; text-align: center; }
+.spike-threshold {
+  display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  font-size: 11px; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ── TABS ── */
+.tab-row { display: flex; gap: 4px; margin-bottom: 18px; background: var(--bg3); padding: 4px; border-radius: 10px; width: fit-content; }
+.tab-btn {
+  padding: 7px 16px; border-radius: 7px; font-size: 13px; cursor: pointer;
+  border: none; background: none; color: var(--text2); transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.tab-btn.active { background: var(--card2); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+
+/* ── LOGIN PAGE ── */
+#loginPage {
+  position: fixed; inset: 0; background: var(--bg); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  width: 400px; background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 40px 36px; text-align: center;
+}
+.login-logo {
+  width: 60px; height: 60px; border-radius: 16px;
+  background: linear-gradient(135deg,var(--teal),var(--teal2));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+.login-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+.login-sub { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.5; }
+.google-btn {
+  width: 100%; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  border: 1px solid var(--border2); background: var(--card2); color: var(--text);
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all .18s; font-family: 'DM Sans', sans-serif; margin-bottom: 12px;
+}
+.google-btn:hover { background: var(--bg3); border-color: var(--teal); transform: translateY(-1px); }
+.login-note { font-size: 11px; color: var(--text3); margin-top: 16px; line-height: 1.6; }
+.login-bg-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 24px 28px; display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--text3);
+}
+.footer-logo { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--teal); }
+
+/* ── ALERT ── */
+.alert-row {
+  display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+  background: var(--card2); border-radius: 9px; margin-bottom: 8px;
+  border-left: 3px solid;
+}
+.alert-row.warn { border-color: var(--amber); }
+.alert-row.danger { border-color: var(--red); }
+.alert-row.ok { border-color: var(--green); }
+.alert-row.info { border-color: var(--blue); }
+.alert-icon { font-size: 16px; margin-top: 1px; }
+.alert-text { font-size: 12.5px; color: var(--text2); line-height: 1.6; }
+.alert-text strong { color: var(--text); font-size: 13px; display: block; margin-bottom: 2px; }
+.alert-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── GLOW EFFECT ── */
+.glow-teal { box-shadow: 0 0 20px rgba(0,212,180,0.15); }
+.glow-amber { box-shadow: 0 0 20px rgba(245,166,35,0.15); }
+
+/* ── ANIMATION ── */
+.fade-up {
+  opacity: 0; transform: translateY(16px);
+  animation: fadeUp .5s ease forwards;
+}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+.mb16 { margin-bottom: 16px; }
+.mb20 { margin-bottom: 20px; }
+.mb24 { margin-bottom: 24px; }
+.mt16 { margin-top: 16px; }
+.gap16 { gap: 16px; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN PAGE ─────────────────────────────── -->
+<div id="loginPage">
+  <div style="position:absolute;width:400px;height:400px;background:var(--teal);top:-100px;left:-100px;border-radius:50%;filter:blur(120px);opacity:.06;pointer-events:none"></div>
+  <div style="position:absolute;width:300px;height:300px;background:var(--amber);bottom:-80px;right:-60px;border-radius:50%;filter:blur(100px);opacity:.06;pointer-events:none"></div>
+  <div class="login-card" style="position:relative;z-index:1">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" width="28" height="28">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    </div>
+    <div class="login-title">Welcome to Wellcare</div>
+    <div class="login-sub">India's first food-first chronic disease prevention system. Sign in to access your intelligent health dashboard.</div>
+    <button class="google-btn" onclick="doLogin()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <div class="login-note">By signing in, you agree to Wellcare's Terms of Service and Privacy Policy. Your health data is encrypted and stored securely.</div>
+  </div>
+</div>
+
+<!-- ─── NAVBAR ─────────────────────────────────── -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" width="18" height="18">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    </div>
+    Wellcare
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showNav(this,'home')">Overview</button>
+    <button class="nav-link" onclick="showNav(this,'food')">Food Tracking</button>
+    <button class="nav-link" onclick="showNav(this,'t2d')">T2D Goals</button>
+    <button class="nav-link" onclick="showNav(this,'nutritionist')">Nutritionist</button>
+    <button class="nav-link" onclick="showNav(this,'reports')">Reports</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-badge"><div class="live-dot"></div>Device Live</div>
+    <button class="btn-login" onclick="document.getElementById('loginPage').style.display='flex'">Arjun S.</button>
+  </div>
+</nav>
+
+<!-- ─── MAIN LAYOUT ────────────────────────────── -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">My Health</div>
+    <button class="sidebar-item active" onclick="showPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="sidebar-item" onclick="showPage('food')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2l1.5 18h15L21 2"/><path d="M9 2v4M12 2v4M15 2v4"/></svg>
+      Food Tracking
+    </button>
+    <button class="sidebar-item" onclick="showPage('t2d')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      T2D Goals
+    </button>
+    <button class="sidebar-item" onclick="showPage('telegram')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      Telegram Bot
+    </button>
+
+    <div class="sidebar-section">Clinical</div>
+    <button class="sidebar-item" onclick="showPage('nutritionist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8v4h8V3z"/></svg>
+      Nutritionist View
+    </button>
+    <button class="sidebar-item" onclick="showPage('reports')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Weekly Reports
+    </button>
+    <button class="sidebar-item" onclick="showPage('family')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Family Care
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ HOME / OVERVIEW ═══ -->
+    <div id="page-home" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Good afternoon, Arjun 👋</div>
+          <div class="page-sub">Tuesday, April 7, 2026 · Wristband connected · Last sync 2 min ago</div>
+        </div>
+        <div class="pill teal">● IoT Active</div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="g4 mb24">
+        <div class="stat-card teal">
+          <div class="stat-label">T2D Risk Score</div>
+          <div class="stat-val teal">62<span style="font-size:16px;font-weight:400">/100</span></div>
+          <div class="stat-sub">↑ +8 pts this week</div>
+          <div class="pill amber" style="margin-top:8px">Moderate Risk</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">CVD Risk Score</div>
+          <div class="stat-val amber">44<span style="font-size:16px;font-weight:400">/100</span></div>
+          <div class="stat-sub">→ Stable this week</div>
+          <div class="pill green" style="margin-top:8px">Low-Moderate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Post-Meal Spikes</div>
+          <div class="stat-val green">2<span style="font-size:16px;font-weight:400">/3 limit</span></div>
+          <div class="stat-sub">1 remaining this week</div>
+          <div class="pill green" style="margin-top:8px">On Track</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Resilience Streak</div>
+          <div class="stat-val blue">5<span style="font-size:16px;font-weight:400"> days</span></div>
+          <div class="stat-sub">Personal best: 8 days</div>
+          <div class="pill blue" style="margin-top:8px">🔥 Keep Going</div>
+        </div>
+      </div>
+
+      <div class="g2 mb20">
+        <!-- Weekly trajectory -->
+        <div class="card">
+          <div class="section-title">7-Day Risk Trajectory <span>updates after every meal</span></div>
+          <div class="chart-wrap-tall">
+            <canvas id="trajectoryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Live vitals -->
+        <div class="card">
+          <div class="section-title">Live Body Signals <span>from wristband</span></div>
+          <div class="g2" style="gap:10px;margin-bottom:16px">
+            <div class="card2" style="text-align:center;padding:16px">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Heart Rate</div>
+              <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--red)" id="liveHR">72</div>
+              <div style="font-size:11px;color:var(--text3)">bpm</div>
+              <div class="chart-wrap" style="height:50px;margin-top:8px"><canvas id="hrSpark"></canvas></div>
+            </div>
+            <div class="card2" style="text-align:center;padding:16px">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">HRV (RMSSD)</div>
+              <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--teal)" id="liveHRV">38</div>
+              <div style="font-size:11px;color:var(--text3)">ms</div>
+              <div class="chart-wrap" style="height:50px;margin-top:8px"><canvas id="hrvSpark"></canvas></div>
+            </div>
+            <div class="card2" style="text-align:center;padding:16px">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">SpO₂</div>
+              <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--blue)" id="liveSPO2">97</div>
+              <div style="font-size:11px;color:var(--text3)">%</div>
+              <div class="chart-wrap" style="height:50px;margin-top:8px"><canvas id="spo2Spark"></canvas></div>
+            </div>
+            <div class="card2" style="text-align:center;padding:16px">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Glucose Proxy</div>
+              <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--amber)" id="liveGlu">108</div>
+              <div style="font-size:11px;color:var(--text3)">mg/dL est.</div>
+              <div class="chart-wrap" style="height:50px;margin-top:8px"><canvas id="gluSpark"></canvas></div>
+            </div>
+          </div>
+          <!-- Today's alerts -->
+          <div class="alert-row warn">
+            <div class="alert-icon">⚡</div>
+            <div>
+              <div class="alert-text"><strong>Post-lunch spike detected</strong>Rice + Dal caused 34mg/dL proxy spike. HRV dropped 28%. T2D score +9 pts.</div>
+              <div class="alert-time">2:15 PM today</div>
+            </div>
+          </div>
+          <div class="alert-row ok">
+            <div class="alert-icon">✓</div>
+            <div>
+              <div class="alert-text"><strong>Morning walk completed</strong>12-min post-breakfast walk detected. Score improved 5 pts.</div>
+              <div class="alert-time">9:30 AM today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's recommendation -->
+      <div class="rec-card mb20">
+        <div class="rec-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Today's AI Recommendation
+        </div>
+        <div class="rec-body">Your post-lunch glucose proxy spike (34 mg/dL above baseline) pushed your T2D weekly budget to 67%. The high-GI rice portion was the primary trigger. <strong style="color:var(--text)">Take a 12-minute brisk walk before 3:30 PM</strong> — this will reduce your post-meal HRV suppression by an estimated 25% and bring your T2D score down 6–8 points by evening. For dinner tonight, swap white rice for millets or reduce portion by 30%.</div>
+        <div class="rec-actions">
+          <div class="rec-action">Log 12-min walk</div>
+          <div class="rec-action">Get millet recipes</div>
+          <div class="rec-action">Send to Telegram</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FOOD TRACKING ═══ -->
+    <div id="page-food" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Food Tracking</div>
+          <div class="page-sub">Daily meal logs with internal body response — every meal tells a story</div>
+        </div>
+        <button class="btn-login" style="padding:9px 18px">+ Log Meal</button>
+      </div>
+
+      <div class="g4 mb24">
+        <div class="stat-card amber">
+          <div class="stat-label">Today's Meal Score</div>
+          <div class="stat-val amber">68/100</div>
+          <div class="stat-sub">3 meals tracked</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Highest Spike Today</div>
+          <div class="stat-val red">34 <span style="font-size:14px">mg/dL</span></div>
+          <div class="stat-sub">Rice + Dal, 1:14 PM</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-label">Avg Recovery Time</div>
+          <div class="stat-val teal">82 <span style="font-size:14px">min</span></div>
+          <div class="stat-sub">Target: under 90 min ✓</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Post-meal Walks</div>
+          <div class="stat-val green">1<span style="font-size:14px">/3</span></div>
+          <div class="stat-sub">2 meals pending</div>
+        </div>
+      </div>
+
+      <!-- DAY CARDS -->
+      <div class="section-title">Daily Meal Timeline <span>each day · 3 meals tracked</span></div>
+
+      <!-- Day 1 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-date">Tuesday, April 7 · Today</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px">3 meals logged · Wristband tracked all day</div>
+          </div>
+          <div class="day-score-row">
+            <div class="day-score-label">Daily Score</div>
+            <div class="day-score-val" style="color:var(--amber)">68</div>
+            <div class="pill amber">Moderate</div>
+          </div>
+        </div>
+        <div class="meals-grid">
+          <!-- Breakfast -->
+          <div class="meal-card">
+            <div class="meal-header">
+              <div class="meal-name-row">
+                <div class="meal-icon" style="background:rgba(34,197,94,.12)">🥣</div>
+                <div><div class="meal-title">Oats + Banana</div><div class="meal-time">Breakfast · 8:02 AM</div></div>
+              </div>
+              <div class="pill green">Low Impact</div>
+            </div>
+            <div class="meal-metrics">
+              <div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--green)">+18 mg/dL</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--green)">12%</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">62 min</div></div>
+            </div>
+            <div style="margin-top:10px">
+              <div class="progress-bar"><div class="progress-fill" style="width:18%;background:var(--green)"></div></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px">18/140 mg/dL safe limit · T2D impact: +3 pts</div>
+            </div>
+          </div>
+          <!-- Lunch -->
+          <div class="meal-card" style="border-color:rgba(255,77,109,.2)">
+            <div class="meal-header">
+              <div class="meal-name-row">
+                <div class="meal-icon" style="background:rgba(255,77,109,.12)">🍚</div>
+                <div><div class="meal-title">Rice + Dal + Sabzi</div><div class="meal-time">Lunch · 1:14 PM</div></div>
+              </div>
+              <div class="pill red">High Impact</div>
+            </div>
+            <div class="meal-metrics">
+              <div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--red)">+34 mg/dL</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--red)">28%</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--amber)">87 min</div></div>
+            </div>
+            <div style="margin-top:10px">
+              <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--red)"></div></div>
+              <div style="font-size:10px;color:var(--red);margin-top:4px">⚠ Exceeded 140 mg/dL WHO limit · T2D impact: +9 pts</div>
+            </div>
+          </div>
+          <!-- Snack -->
+          <div class="meal-card">
+            <div class="meal-header">
+              <div class="meal-name-row">
+                <div class="meal-icon" style="background:rgba(59,130,246,.12)">☕</div>
+                <div><div class="meal-title">Black Coffee</div><div class="meal-time">Snack · 4:30 PM</div></div>
+              </div>
+              <div class="pill green">Minimal</div>
+            </div>
+            <div class="meal-metrics">
+              <div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--green)">+3 mg/dL</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--green)">4%</div></div>
+              <div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">18 min</div></div>
+            </div>
+            <div style="margin-top:10px">
+              <div class="progress-bar"><div class="progress-fill" style="width:3%;background:var(--green)"></div></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px">3/140 mg/dL safe limit · T2D impact: +0.5 pts</div>
+            </div>
+          </div>
+        </div>
+        <!-- Day recommendation -->
+        <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border-radius:9px;border:1px solid var(--border)">
+          <div style="font-size:12px;font-weight:500;color:var(--teal);margin-bottom:4px">Today's food recommendation</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.7">Lunch was the problem today. Your rice portion caused a spike above WHO's 140 mg/dL healthy threshold. For dinner: try khichdi (rice + moong dal, lower GI) or bajra roti. Add 2 tbsp of curd — it slows glucose absorption by ~20%. Take a 10-minute walk by 7:30 PM to help your body clear the remaining glucose stress before sleep.</div>
+        </div>
+      </div>
+
+      <!-- Day 2 (yesterday) -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-date">Monday, April 6 · Yesterday</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px">3 meals logged · Full day tracked</div>
+          </div>
+          <div class="day-score-row">
+            <div class="day-score-label">Daily Score</div>
+            <div class="day-score-val" style="color:var(--green)">82</div>
+            <div class="pill green">Good Day</div>
+          </div>
+        </div>
+        <div class="meals-grid">
+          <div class="meal-card"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(34,197,94,.12)">🫓</div><div><div class="meal-title">Idli + Sambar</div><div class="meal-time">Breakfast · 7:45 AM</div></div></div><div class="pill green">Low Impact</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--green)">+12 mg/dL</div></div><div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--green)">8%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">45 min</div></div></div></div>
+          <div class="meal-card"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(245,166,35,.12)">🍛</div><div><div class="meal-title">Rajma Chawal</div><div class="meal-time">Lunch · 1:00 PM</div></div></div><div class="pill amber">Moderate</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--amber)">+26 mg/dL</div></div><div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--amber)">18%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">74 min</div></div></div></div>
+          <div class="meal-card"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(0,212,180,.12)">🥗</div><div><div class="meal-title">Salad + Curd Rice</div><div class="meal-time">Dinner · 7:30 PM</div></div></div><div class="pill green">Low Impact</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Glucose Spike</div><div class="meal-metric-val" style="color:var(--green)">+14 mg/dL</div></div><div class="meal-metric"><div class="meal-metric-label">HRV Drop</div><div class="meal-metric-val" style="color:var(--green)">9%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">52 min</div></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ T2D GOALS ═══ -->
+    <div id="page-t2d" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">T2D Prevention Goals</div>
+          <div class="page-sub">Weekly body budget · Grounded in ADA 2024 + WHO guidelines · Resets every Sunday</div>
+        </div>
+        <div class="pill teal">Week 14 of tracking</div>
+      </div>
+
+      <div class="g2 mb20">
+        <!-- Score ring -->
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px">Weekly Metabolic Stress Score</div>
+          <div style="position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center">
+            <canvas id="scoreRing" width="180" height="180" style="position:absolute"></canvas>
+            <div style="text-align:center;z-index:1">
+              <div style="font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:var(--amber);line-height:1">62</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:4px">out of 100</div>
+              <div class="pill amber" style="margin-top:8px">Moderate Risk</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:16px;line-height:1.7">Target: below 30 · You are at <strong style="color:var(--amber)">62%</strong> of safe limit.<br>3 days left this week to improve.</div>
+        </div>
+
+        <!-- Glucose spike visual -->
+        <div class="card">
+          <div class="section-title">Glucose Spike Monitor <span>WHO limit: 140 mg/dL post-meal</span></div>
+          <div class="chart-wrap-tall">
+            <canvas id="glucoseChart"></canvas>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:var(--green)"></div>Under 140 (safe)</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div>Over 140 (exceeded)</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,109,.15)"></div>WHO threshold</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Goals -->
+      <div class="section-title">Weekly Goals <span>ADA 2024 + WHO guidelines</span></div>
+
+      <!-- Goal 1 -->
+      <div class="goal-item">
+        <div class="goal-top">
+          <div class="goal-name">
+            <div class="goal-icon" style="background:var(--red-dim)">🩸</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:500">Goal 1 — Glucose Spike Limit</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Max 3 spikes above 140 mg/dL per week · Source: WHO / IDF Postmeal Guidelines</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber)">2<span style="font-size:14px;color:var(--text3)">/3</span></div>
+            <div class="pill amber" style="margin-top:4px">1 remaining</div>
+          </div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:67%;background:linear-gradient(90deg,var(--amber),var(--red))"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3)">
+          <span>Mon: 34 mg/dL spike ⚠ · Tue: 18 mg/dL safe ✓ · Wed: 29 mg/dL safe ✓ · Thu: 34 mg/dL spike ⚠</span>
+          <span>3 days left</span>
+        </div>
+      </div>
+
+      <!-- Goal 2 -->
+      <div class="goal-item">
+        <div class="goal-top">
+          <div class="goal-name">
+            <div class="goal-icon" style="background:var(--teal-dim)">⏱</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:500">Goal 2 — Post-Meal Recovery in 90 Min</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">HRV must return to baseline within 90 min for 5/7 days · Source: ADA 2024</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--green)">4<span style="font-size:14px;color:var(--text3)">/5</span></div>
+            <div class="pill green" style="margin-top:4px">Almost there</div>
+          </div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:80%;background:var(--green)"></div></div>
+        <div style="display:flex;gap:6px">
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Mon 62min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--red-dim);color:var(--red)">Tue 87min ✗</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Wed 74min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Thu 55min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Fri 68min ✓</div>
+        </div>
+      </div>
+
+      <!-- Goal 3 -->
+      <div class="goal-item">
+        <div class="goal-top">
+          <div class="goal-name">
+            <div class="goal-icon" style="background:var(--blue-dim)">🌙</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:500">Goal 3 — Sleep Cycle Quality</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">7–9 hrs sleep + overnight HRV above baseline · Source: ADA 2024 + AHA Life's Essential 8</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber)">3<span style="font-size:14px;color:var(--text3)">/6</span></div>
+            <div class="pill amber" style="margin-top:4px">Need improvement</div>
+          </div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:50%;background:var(--amber)"></div></div>
+        <div class="chart-wrap" style="height:80px;margin-top:8px"><canvas id="sleepChart"></canvas></div>
+      </div>
+
+      <!-- Goal 4 -->
+      <div class="goal-item">
+        <div class="goal-top">
+          <div class="goal-name">
+            <div class="goal-icon" style="background:var(--green-dim)">🚶</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:500">Goal 4 — 10-Min Post-Meal Walk</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">At least 5 post-meal walks this week · Source: ADA 2024 Diabetes Prevention Program</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--amber)">3<span style="font-size:14px;color:var(--text3)">/5</span></div>
+            <div class="pill amber" style="margin-top:4px">2 walks needed</div>
+          </div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:60%;background:var(--amber)"></div></div>
+        <div style="display:flex;gap:6px">
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Mon 12min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--red-dim);color:var(--red)">Tue skipped ✗</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Wed 15min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--green-dim);color:var(--green)">Thu 10min ✓</div>
+          <div style="font-size:11px;padding:3px 8px;border-radius:6px;background:var(--red-dim);color:var(--red)">Fri pending ...</div>
+        </div>
+      </div>
+
+      <!-- T2D Weekly Recommendation -->
+      <div class="rec-card mt16">
+        <div class="rec-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          This week's T2D recommendation for next week
+        </div>
+        <div class="rec-body">Based on this week's data: your main risk driver is <strong style="color:var(--text)">high-GI meals at lunch</strong> causing 2 glucose spikes above 140 mg/dL. Your recovery is good (80% of meals recovered within 90 min) but <strong style="color:var(--text)">sleep quality is dropping</strong> — 3 of 5 nights HRV fell below your baseline, which compounds insulin resistance the next morning.<br><br>Next week's priority: <strong style="color:var(--teal)">1) Replace white rice at lunch with millets or reduce portion by 40%</strong> · <strong style="color:var(--teal)">2) Sleep by 10:30 PM — your data shows HRV drops 22% when you sleep after midnight</strong> · <strong style="color:var(--teal)">3) Don't skip the Tuesday post-lunch walk — that was your worst spike day</strong>.</div>
+        <div class="rec-actions">
+          <div class="rec-action">Share with doctor</div>
+          <div class="rec-action">Millet meal plan</div>
+          <div class="rec-action">Export PDF report</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NUTRITIONIST DASHBOARD ═══ -->
+    <div id="page-nutritionist" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Nutritionist Dashboard</div>
+          <div class="page-sub">Monitor all patients · Real-time food-body signals · Daily meal reports</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="pill green">6 patients active</div>
+          <button class="btn-login" style="padding:9px 18px">+ Add Patient</button>
+        </div>
+      </div>
+
+      <!-- Patient list -->
+      <div class="section-title mb16">Active Patients <span>click to view detailed reports</span></div>
+
+      <div class="user-row" onclick="showPage('reports')">
+        <div class="user-avatar">AS</div>
+        <div style="flex:1"><div class="user-name">Arjun Sharma</div><div class="user-meta">Male · 38y · Prediabetic · Mumbai</div></div>
+        <div class="user-scores">
+          <div class="score-chip" style="background:var(--amber-dim);color:var(--amber)">T2D: 62</div>
+          <div class="score-chip" style="background:var(--blue-dim);color:var(--blue)">CVD: 44</div>
+          <div class="pill amber">Action needed</div>
+        </div>
+      </div>
+
+      <div class="user-row">
+        <div class="user-avatar" style="background:var(--red-dim);color:var(--red)">PM</div>
+        <div style="flex:1"><div class="user-name">Priya Mehta</div><div class="user-meta">Female · 45y · T2D diagnosed · Pune</div></div>
+        <div class="user-scores">
+          <div class="score-chip" style="background:var(--red-dim);color:var(--red)">T2D: 78</div>
+          <div class="score-chip" style="background:var(--amber-dim);color:var(--amber)">CVD: 61</div>
+          <div class="pill red">High risk</div>
+        </div>
+      </div>
+
+      <div class="user-row">
+        <div class="user-avatar" style="background:var(--green-dim);color:var(--green)">RK</div>
+        <div style="flex:1"><div class="user-name">Ramesh Kumar</div><div class="user-meta">Male · 52y · Post-surgery · Nanded</div></div>
+        <div class="user-scores">
+          <div class="score-chip" style="background:var(--green-dim);color:var(--green)">T2D: 31</div>
+          <div class="score-chip" style="background:var(--green-dim);color:var(--green)">CVD: 28</div>
+          <div class="pill green">Good progress</div>
+        </div>
+      </div>
+
+      <div class="user-row">
+        <div class="user-avatar" style="background:var(--blue-dim);color:var(--blue)">SN</div>
+        <div style="flex:1"><div class="user-name">Sunita Nair</div><div class="user-meta">Female · 41y · Prediabetic · Nagpur</div></div>
+        <div class="user-scores">
+          <div class="score-chip" style="background:var(--amber-dim);color:var(--amber)">T2D: 54</div>
+          <div class="score-chip" style="background:var(--blue-dim);color:var(--blue)">CVD: 39</div>
+          <div class="pill amber">Monitor closely</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Patient deep dive -->
+      <div class="section-title">Patient: Arjun Sharma · Today's Report <span>April 7, 2026</span></div>
+
+      <div class="g2 mb20">
+        <div>
+          <!-- Today meals for this patient -->
+          <div class="day-card" style="margin-bottom:0">
+            <div class="day-header">
+              <div><div class="day-date">Tuesday, April 7 — Arjun Sharma</div><div style="font-size:12px;color:var(--text3);margin-top:3px">Prediabetic · Under monitoring since Jan 2026</div></div>
+              <div class="day-score-row"><div class="day-score-label">Daily Score</div><div class="day-score-val" style="color:var(--amber)">68</div><div class="pill amber">Moderate</div></div>
+            </div>
+            <div class="meals-grid">
+              <div class="meal-card"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(34,197,94,.12)">🥣</div><div><div class="meal-title">Oats + Banana</div><div class="meal-time">8:02 AM</div></div></div><div class="pill green">Safe</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Spike</div><div class="meal-metric-val" style="color:var(--green)">+18</div></div><div class="meal-metric"><div class="meal-metric-label">HRV↓</div><div class="meal-metric-val" style="color:var(--green)">12%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">62m</div></div></div></div>
+              <div class="meal-card" style="border-color:rgba(255,77,109,.2)"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(255,77,109,.12)">🍚</div><div><div class="meal-title">Rice + Dal + Sabzi</div><div class="meal-time">1:14 PM</div></div></div><div class="pill red">Exceeded</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Spike</div><div class="meal-metric-val" style="color:var(--red)">+34</div></div><div class="meal-metric"><div class="meal-metric-label">HRV↓</div><div class="meal-metric-val" style="color:var(--red)">28%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--amber)">87m</div></div></div></div>
+              <div class="meal-card"><div class="meal-header"><div class="meal-name-row"><div class="meal-icon" style="background:rgba(59,130,246,.12)">☕</div><div><div class="meal-title">Black Coffee</div><div class="meal-time">4:30 PM</div></div></div><div class="pill green">Safe</div></div><div class="meal-metrics"><div class="meal-metric"><div class="meal-metric-label">Spike</div><div class="meal-metric-val" style="color:var(--green)">+3</div></div><div class="meal-metric"><div class="meal-metric-label">HRV↓</div><div class="meal-metric-val" style="color:var(--green)">4%</div></div><div class="meal-metric"><div class="meal-metric-label">Recovery</div><div class="meal-metric-val" style="color:var(--green)">18m</div></div></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Nutritionist notes -->
+        <div class="card">
+          <div class="section-title">Nutritionist Notes</div>
+          <div style="margin-bottom:12px">
+            <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Internal signal pattern this week</div>
+            <div class="chart-wrap" style="height:120px"><canvas id="nutriChart"></canvas></div>
+          </div>
+          <div class="alert-row warn" style="margin-bottom:8px">
+            <div class="alert-icon">⚠</div>
+            <div><div class="alert-text"><strong>2nd high spike this week</strong>Both on high-GI lunch days. Pattern: white rice + dal → consistent spike above 140.</div></div>
+          </div>
+          <div class="alert-row info">
+            <div class="alert-icon">ℹ</div>
+            <div><div class="alert-text"><strong>Sleep trending down</strong>HRV fell below baseline 3 nights. Recommend sleep hygiene intervention.</div></div>
+          </div>
+          <div style="margin-top:12px">
+            <textarea placeholder="Add clinical note for Arjun..." style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;resize:vertical;min-height:70px;outline:none"></textarea>
+            <button class="btn-login" style="margin-top:8px;padding:8px 16px;font-size:12px">Save Note</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ WEEKLY REPORTS ═══ -->
+    <div id="page-reports" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Weekly Reports</div>
+          <div class="page-sub">Complete 7-day body analysis · For doctors, nutritionists and self-review</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="pill blue">Week of Apr 1–7</div>
+          <button class="btn-login" style="padding:9px 16px;font-size:13px">Export PDF</button>
+        </div>
+      </div>
+
+      <div class="tab-row mb20">
+        <button class="tab-btn active" onclick="switchTab(this,'rep-graphs')">Charts & Graphs</button>
+        <button class="tab-btn" onclick="switchTab(this,'rep-table')">Data Table</button>
+        <button class="tab-btn" onclick="switchTab(this,'rep-rec')">Recommendations</button>
+      </div>
+
+      <!-- Graphs tab -->
+      <div id="rep-graphs">
+        <div class="g2 mb20">
+          <div class="card">
+            <div class="section-title">T2D Risk — 7-day trend</div>
+            <div class="chart-wrap-tall"><canvas id="weekT2DChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Post-meal glucose spikes — all 21 meals</div>
+            <div class="chart-wrap-tall"><canvas id="weekSpikeChart"></canvas></div>
+          </div>
+        </div>
+        <div class="g2 mb20">
+          <div class="card">
+            <div class="section-title">HRV recovery times this week</div>
+            <div class="chart-wrap"><canvas id="weekHRVChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Sleep quality — nightly HRV</div>
+            <div class="chart-wrap"><canvas id="weekSleepChart2"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table tab (hidden) -->
+      <div id="rep-table" style="display:none">
+        <div class="card mb20">
+          <div class="section-title">Daily summary table <span>all 4 goals tracked</span></div>
+          <table class="report-table">
+            <thead><tr><th>Day</th><th>Spikes >140</th><th>Avg Recovery</th><th>Sleep HRV</th><th>Post-walk</th><th>Daily Score</th><th>T2D Delta</th></tr></thead>
+            <tbody>
+              <tr><td>Tuesday Apr 1</td><td><span class="pill green">0</span></td><td>65 min</td><td>Above baseline</td><td class="pill green">✓ 12min</td><td><span style="color:var(--green)">88</span></td><td class="trend-down">-3 pts</td></tr>
+              <tr><td>Wednesday Apr 2</td><td><span class="pill green">0</span></td><td>72 min</td><td>Above baseline</td><td class="pill green">✓ 15min</td><td><span style="color:var(--green)">84</span></td><td class="trend-down">-2 pts</td></tr>
+              <tr><td>Thursday Apr 3</td><td><span class="pill amber">1</span></td><td>88 min</td><td>Below baseline</td><td class="pill red">✗ skipped</td><td><span style="color:var(--amber)">71</span></td><td class="trend-up">+5 pts</td></tr>
+              <tr><td>Friday Apr 4</td><td><span class="pill green">0</span></td><td>61 min</td><td>Above baseline</td><td class="pill green">✓ 10min</td><td><span style="color:var(--green)">86</span></td><td class="trend-down">-4 pts</td></tr>
+              <tr><td>Saturday Apr 5</td><td><span class="pill green">0</span></td><td>74 min</td><td>Below baseline</td><td class="pill amber">✓ 8min</td><td><span style="color:var(--amber)">76</span></td><td class="trend-flat">+1 pt</td></tr>
+              <tr><td>Sunday Apr 6</td><td><span class="pill green">0</span></td><td>52 min</td><td>Above baseline</td><td class="pill green">✓ 13min</td><td><span style="color:var(--green)">91</span></td><td class="trend-down">-5 pts</td></tr>
+              <tr><td>Monday Apr 7</td><td><span class="pill red">1</span></td><td>87 min</td><td>Tracking...</td><td class="pill amber">Pending</td><td><span style="color:var(--amber)">68</span></td><td class="trend-up">+9 pts</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recommendations tab (hidden) -->
+      <div id="rep-rec" style="display:none">
+        <div class="rec-card mb16">
+          <div class="rec-title">📋 Doctor's Summary — Week of April 1–7</div>
+          <div class="rec-body">This report is generated from 7 days of continuous wristband data across 21 meals. Key findings for clinical review:<br><br>
+          <strong style="color:var(--text)">T2D pathway:</strong> Patient had 2 significant post-meal glucose proxy events (>140 mg/dL threshold equivalent) — both triggered by white rice + dal combination at lunch. Recovery times are within target 5/7 days. Sleep quality degraded mid-week (Thursday + Saturday nights) which correlates with elevated morning glucose proxy the following day.<br><br>
+          <strong style="color:var(--text)">What this tells you beyond HbA1c:</strong> The disease driver is specifically high-GI carb overload at lunch (not snacks or dinner). Morning glucose is consistently safe. The patient's insulin response is still functional but slower than baseline — average recovery extended by 12 minutes compared to Week 12. Sleep intervention needed alongside dietary change.<br><br>
+          <strong style="color:var(--text)">Recommended clinical action:</strong> Medical nutrition therapy focused on lunch glycemic load reduction. Consider CGM for 2-week confirmation of proxy patterns. Sleep hygiene referral.</div>
+          <div class="rec-actions">
+            <div class="rec-action">Download for doctor</div>
+            <div class="rec-action">Share via WhatsApp</div>
+            <div class="rec-action">Compare with Week 13</div>
+          </div>
+        </div>
+
+        <div class="rec-card" style="background:linear-gradient(135deg,rgba(245,166,35,.08),rgba(245,166,35,.03));border-color:rgba(245,166,35,.2)">
+          <div class="rec-title" style="color:var(--amber)">🎯 Personalised Action Plan — Next Week</div>
+          <div class="rec-body">Based on this week's patterns, here are 4 specific changes for next week:<br><br>
+          <strong style="color:var(--text)">1. Lunch switch:</strong> Replace white rice with bajra roti or reduce rice portion by 40% and add 2 tbsp curd. Expected spike reduction: 35–45%.<br><br>
+          <strong style="color:var(--text)">2. Walk streak:</strong> You completed 4 of 5 target walks. This week add a reminder at 1:30 PM (30 min after lunch) so you don't skip Tuesday again. Even 8 minutes reduces your recovery time by ~20 minutes.<br><br>
+          <strong style="color:var(--text)">3. Sleep timing:</strong> Your Thursday data shows you slept at 12:45 AM — HRV next morning was 22% below baseline. Set a hard bedtime of 11 PM for Mon–Thu. Your Friday data confirms it works.<br><br>
+          <strong style="color:var(--text)">4. Spike budget:</strong> You used 2 of 3 allowed spikes this week. You have 1 left — use it wisely. If you eat biryani this weekend, do it at lunch (not dinner) so you can do a post-meal walk to bring the score down.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TELEGRAM BOT ═══ -->
+    <div id="page-telegram" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Telegram Health Bot</div>
+          <div class="page-sub">Get live body updates after every meal · No app needed · Works on any phone</div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div>
+          <div class="tg-card mb16">
+            <div class="tg-header">
+              <div class="tg-icon">✈</div>
+              <div>
+                <div style="font-size:15px;font-weight:600">Wellcare Bot</div>
+                <div class="tg-status">Status: <span class="tg-connected">● Connected</span> · @wellcare_bot</div>
+              </div>
+            </div>
+            <div class="tg-preview">
+              <strong>🩸 Meal Report — 1:14 PM</strong><br>
+              Meal: Rice + Dal + Sabzi<br>
+              Glucose proxy spike: <strong>+34 mg/dL</strong> ⚠ (WHO limit: 140 mg/dL)<br>
+              HRV drop: <strong>28%</strong> · Recovery time: <strong>87 min</strong><br>
+              T2D score today: <strong>+9 pts → now at 62/100</strong><br><br>
+              <strong>💡 Action:</strong> Take a 12-min walk before 3:30 PM to reduce tomorrow's risk by ~25%.<br>
+              For dinner: try bajra roti + sabzi instead of rice.
+            </div>
+            <div style="margin-bottom:12px">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:6px">What to send me</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="font-size:12px;padding:5px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer">After every meal</div>
+                <div style="font-size:12px;padding:5px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer">Daily morning summary</div>
+                <div style="font-size:12px;padding:5px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer">Weekly report Sunday</div>
+                <div style="font-size:12px;padding:5px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer">Risk threshold alerts</div>
+              </div>
+            </div>
+            <button class="tg-btn" style="margin-bottom:8px">Send Today's Summary Now</button>
+            <button class="tg-btn danger">Disconnect Bot</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="card mb16">
+            <div class="section-title">Message History <span>last 24 hours</span></div>
+            <div class="alert-row ok" style="margin-bottom:6px"><div class="alert-icon">✈</div><div><div class="alert-text"><strong>Morning summary sent</strong>Yesterday's final score: 82/100. All 4 goals on track.</div><div class="alert-time">7:00 AM today</div></div></div>
+            <div class="alert-row warn" style="margin-bottom:6px"><div class="alert-icon">⚡</div><div><div class="alert-text"><strong>Spike alert sent</strong>Rice + Dal lunch triggered >140 mg/dL proxy. Walk reminder sent.</div><div class="alert-time">2:15 PM today</div></div></div>
+            <div class="alert-row info"><div class="alert-icon">ℹ</div><div><div class="alert-text"><strong>Goal progress update</strong>3/4 goals on track. Sleep goal needs attention tonight.</div><div class="alert-time">6:00 PM today</div></div></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Bot Settings</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:13px">Send after every meal</div>
+                <div style="width:36px;height:20px;background:var(--teal);border-radius:10px;position:relative;cursor:pointer"><div style="position:absolute;right:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:13px">Daily morning digest (7 AM)</div>
+                <div style="width:36px;height:20px;background:var(--teal);border-radius:10px;position:relative;cursor:pointer"><div style="position:absolute;right:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:13px">Alert when spike >140 mg/dL</div>
+                <div style="width:36px;height:20px;background:var(--teal);border-radius:10px;position:relative;cursor:pointer"><div style="position:absolute;right:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:13px">Weekly Sunday report</div>
+                <div style="width:36px;height:20px;background:rgba(255,255,255,.1);border-radius:10px;position:relative;cursor:pointer"><div style="position:absolute;left:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;opacity:.5"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:13px">Language</div>
+                <select style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif"><option>English</option><option>Hindi</option><option>Marathi</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FAMILY CARE ═══ -->
+    <div id="page-family" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Family Care Dashboard</div>
+          <div class="page-sub">Monitor your family's health remotely · Real-time alerts · Emergency contacts</div>
+        </div>
+        <button class="btn-login" style="padding:9px 18px">+ Add Family Member</button>
+      </div>
+
+      <div class="g2 mb20">
+        <!-- Parent 1 -->
+        <div class="card glow-amber">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+            <div class="user-avatar" style="width:48px;height:48px;font-size:16px;background:var(--amber-dim);color:var(--amber)">RD</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:600">Ramesh Sharma (Father)</div>
+              <div style="font-size:12px;color:var(--text3)">65 years · Nanded, Maharashtra · Device active</div>
+            </div>
+            <div class="live-dot"></div>
+          </div>
+          <div class="g2" style="gap:10px;margin-bottom:14px">
+            <div class="card2" style="text-align:center;padding:14px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">T2D Score</div><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--amber)">71</div><div class="pill amber" style="margin:4px auto 0;width:fit-content">High attention</div></div>
+            <div class="card2" style="text-align:center;padding:14px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">CVD Score</div><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--amber)">58</div><div class="pill amber" style="margin:4px auto 0;width:fit-content">Monitoring</div></div>
+          </div>
+          <div class="alert-row warn" style="margin-bottom:10px"><div class="alert-icon">⚠</div><div><div class="alert-text"><strong>T2D score rose 12 pts this week</strong>3 high-spike meals detected. Walk compliance: 1/5 this week.</div><div class="alert-time">Today · 4:18 PM</div></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+            <button style="padding:9px;border-radius:8px;background:var(--red-dim);border:1px solid rgba(255,77,109,.3);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📞 Call Ambulance</button>
+            <button style="padding:9px;border-radius:8px;background:var(--blue-dim);border:1px solid rgba(59,130,246,.3);color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🏥 Nearby Hospitals</button>
+            <button style="padding:9px;border-radius:8px;background:var(--teal-dim);border:1px solid rgba(0,212,180,.3);color:var(--teal);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👨‍⚕️ Contact Doctor</button>
+            <button style="padding:9px;border-radius:8px;background:var(--green-dim);border:1px solid rgba(34,197,94,.3);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📱 Alert Neighbour</button>
+          </div>
+        </div>
+
+        <!-- Parent 2 -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+            <div class="user-avatar" style="width:48px;height:48px;font-size:16px;background:var(--green-dim);color:var(--green)">KS</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:600">Kamala Sharma (Mother)</div>
+              <div style="font-size:12px;color:var(--text3)">61 years · Nanded, Maharashtra · Device active</div>
+            </div>
+            <div class="live-dot" style="background:var(--green)"></div>
+          </div>
+          <div class="g2" style="gap:10px;margin-bottom:14px">
+            <div class="card2" style="text-align:center;padding:14px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">T2D Score</div><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--green)">34</div><div class="pill green" style="margin:4px auto 0;width:fit-content">Good</div></div>
+            <div class="card2" style="text-align:center;padding:14px"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">CVD Score</div><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--green)">29</div><div class="pill green" style="margin:4px auto 0;width:fit-content">Low risk</div></div>
+          </div>
+          <div class="alert-row ok" style="margin-bottom:10px"><div class="alert-icon">✓</div><div><div class="alert-text"><strong>Good week for Kamala</strong>All 4 goals hit. Metabolic resilience streak: 6 days. Keep going!</div><div class="alert-time">Today · 3:00 PM</div></div></div>
+          <div class="card2" style="padding:12px">
+            <div style="font-size:12px;font-weight:500;margin-bottom:6px">Weekly Report — sent to your phone</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.7">Kamala had an excellent week. T2D score dropped from 41 to 34. She completed 4 post-meal walks and her sleep HRV was above baseline 6/7 nights. No intervention needed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency contacts -->
+      <div class="card">
+        <div class="section-title">Emergency Contacts — Nanded Area</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div class="card2"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Nearest Hospital</div><div style="font-size:13px;font-weight:500">District Hospital Nanded</div><div style="font-size:11px;color:var(--text2)">2.4 km · 02462-234567</div></div>
+          <div class="card2"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Family Doctor</div><div style="font-size:13px;font-weight:500">Dr. Prakash Kulkarni</div><div style="font-size:11px;color:var(--text2)">GP · 094234 56789</div></div>
+          <div class="card2"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Local Nurse (ASHA)</div><div style="font-size:13px;font-weight:500">Anjali Waghmare</div><div style="font-size:11px;color:var(--text2)">Peth ward · 098765 43210</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="margin-left:220px">
+  <div>
+    <div class="footer-logo">Wellcare</div>
+    <div style="margin-top:4px">India's first food-first chronic disease prevention system · IoT + AI</div>
+  </div>
+  <div style="display:flex;gap:20px;font-size:12px">
+    <span>ADA 2024 Standards · WHO IDF Guidelines · AHA Life's Essential 8</span>
+  </div>
+  <div>© 2026 Wellcare Health Systems</div>
+</footer>
+
+<script>
+// ─── LOGIN ───────────────────────────────────────
+function doLogin() {
+  document.getElementById('loginPage').style.display = 'none';
+}
+
+// ─── NAVIGATION ──────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('page-'+id);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+  });
+  initCharts(id);
+}
+
+function showNav(btn, id) {
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showPage(id);
+}
+
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['rep-graphs','rep-table','rep-rec'].forEach(tid => {
+    const el = document.getElementById(tid);
+    if (el) el.style.display = tid === id ? 'block' : 'none';
+  });
+}
+
+// ─── CHART.JS GLOBAL DEFAULTS ────────────────────
+Chart.defaults.color = '#4a6480';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+const TEAL = '#00d4b4', AMBER = '#f5a623', RED = '#ff4d6d', GREEN = '#22c55e', BLUE = '#3b82f6';
+
+let chartsInit = {};
+
+function initCharts(page) {
+  if (chartsInit[page]) return;
+  chartsInit[page] = true;
+
+  if (page === 'home') {
+    // Trajectory chart
+    new Chart(document.getElementById('trajectoryChart'), {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [
+          { label:'T2D', data:[54,58,52,64,60,56,62], borderColor:AMBER, backgroundColor:'rgba(245,166,35,.1)', tension:.4, fill:true, pointBackgroundColor:AMBER, pointRadius:4 },
+          { label:'CVD', data:[42,44,40,46,44,42,44], borderColor:BLUE, backgroundColor:'rgba(59,130,246,.08)', tension:.4, fill:true, pointBackgroundColor:BLUE, pointRadius:4 }
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ boxWidth:10, padding:16, color:'#8ba8c4' } } }, scales:{ y:{ min:20, max:90, grid:{ color:'rgba(255,255,255,.04)' } }, x:{ grid:{ display:false } } } }
+    });
+
+    // Sparklines
+    function spark(id, data, color) {
+      const ctx = document.getElementById(id);
+      if (!ctx) return;
+      new Chart(ctx, {
+        type:'line', data:{ labels:data.map((_,i)=>i), datasets:[{ data, borderColor:color, tension:.4, pointRadius:0, borderWidth:1.5, fill:false }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}} }
+      });
+    }
+    spark('hrSpark', [74,73,72,73,71,72,73,72,72,72], RED);
+    spark('hrvSpark', [35,36,37,36,38,37,38,37,38,38], TEAL);
+    spark('spo2Spark', [97,97,98,97,97,98,97,97,97,97], BLUE);
+    spark('gluSpark', [95,100,110,128,122,115,110,108,106,108], AMBER);
+  }
+
+  if (page === 't2d') {
+    // Score ring
+    const rCtx = document.getElementById('scoreRing');
+    new Chart(rCtx, {
+      type: 'doughnut',
+      data: { datasets: [{ data:[62,38], backgroundColor: ['rgba(245,166,35,.9)','rgba(255,255,255,.05)'], borderWidth:0, cutout:'80%' }] },
+      options: { responsive:false, maintainAspectRatio:false, plugins:{legend:{display:false}}, animation:{duration:1200} }
+    });
+
+    // Glucose chart
+    const labels = ['Mon B','Mon L','Mon D','Tue B','Tue L','Tue D','Wed B','Wed L','Wed D','Thu B','Thu L','Thu D','Fri B','Fri L','Fri D'];
+    const vals = [18,28,15,22,34,12,16,24,18,14,31,10,20,26,14];
+    new Chart(document.getElementById('glucoseChart'), {
+      type:'bar',
+      data: {
+        labels,
+        datasets: [{
+          label:'mg/dL spike',
+          data: vals,
+          backgroundColor: vals.map(v => v > 30 ? 'rgba(255,77,109,.8)' : v > 20 ? 'rgba(245,166,35,.8)' : 'rgba(34,197,94,.8)'),
+          borderRadius:4
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins: { legend:{display:false}, annotation:{} },
+        scales: {
+          y: { max:50, grid:{ color:'rgba(255,255,255,.04)' },
+            ticks:{ callback: v => v+'mg/dL' } },
+          x: { grid:{display:false}, ticks:{font:{size:10}} }
+        }
+      }
+    });
+
+    // Sleep chart
+    new Chart(document.getElementById('sleepChart'), {
+      type:'bar',
+      data: { labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ data:[7.5,6.2,8,5.8,7.2,6.0,7.8], backgroundColor:['rgba(59,130,246,.7)','rgba(255,77,109,.6)','rgba(59,130,246,.7)','rgba(255,77,109,.6)','rgba(59,130,246,.7)','rgba(255,77,109,.6)','rgba(59,130,246,.7)'], borderRadius:4 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{min:0,max:10,grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>v+'h'}}, x:{grid:{display:false}} } }
+    });
+  }
+
+  if (page === 'nutritionist') {
+    new Chart(document.getElementById('nutriChart'), {
+      type:'line',
+      data: { labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ label:'Avg spike mg/dL', data:[20,34,18,28,26,16,34], borderColor:AMBER, backgroundColor:'rgba(245,166,35,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:AMBER }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{grid:{color:'rgba(255,255,255,.04)'}}, x:{grid:{display:false}} } }
+    });
+  }
+
+  if (page === 'reports') {
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    new Chart(document.getElementById('weekT2DChart'), {
+      type:'line',
+      data: { labels:days, datasets:[
+        { label:'T2D Risk', data:[54,58,52,64,60,56,62], borderColor:AMBER, backgroundColor:'rgba(245,166,35,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:AMBER },
+        { label:'Target (30)', data:[30,30,30,30,30,30,30], borderColor:'rgba(34,197,94,.4)', borderDash:[5,5], pointRadius:0 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10,padding:16,color:'#8ba8c4'}}}, scales:{ y:{min:0,max:100,grid:{color:'rgba(255,255,255,.04)'}}, x:{grid:{display:false}} } }
+    });
+    new Chart(document.getElementById('weekSpikeChart'), {
+      type:'bar',
+      data: { labels:['M-B','M-L','M-D','Tu-B','Tu-L','Tu-D','W-B','W-L','W-D','Th-B','Th-L','Th-D','F-B','F-L','F-D','Sa-B','Sa-L','Sa-D','Su-B','Su-L','Su-D'],
+        datasets:[{ data:[16,34,12,18,22,14,14,28,16,20,34,10,18,26,14,12,20,15,10,16,12], backgroundColor:v => v > 30 ? 'rgba(255,77,109,.8)':'rgba(34,197,94,.7)', borderRadius:3 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{max:50,grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>v+''}}, x:{grid:{display:false},ticks:{font:{size:9}}} } }
+    });
+    new Chart(document.getElementById('weekHRVChart'), {
+      type:'line',
+      data:{ labels:days, datasets:[
+        { label:'Recovery min', data:[65,87,74,88,68,72,87], borderColor:TEAL, backgroundColor:'rgba(0,212,180,.1)', tension:.4, fill:true, pointRadius:4, pointBackgroundColor:TEAL },
+        { label:'Target (90min)', data:[90,90,90,90,90,90,90], borderColor:'rgba(34,197,94,.4)', borderDash:[5,5], pointRadius:0 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10,padding:12,color:'#8ba8c4'}}}, scales:{ y:{grid:{color:'rgba(255,255,255,.04)'}}, x:{grid:{display:false}} } }
+    });
+    new Chart(document.getElementById('weekSleepChart2'), {
+      type:'bar',
+      data:{ labels:days, datasets:[{ data:[7.5,6.2,8,5.8,7.2,6.0,7.8], backgroundColor:days.map((_,i)=>[0,2,4,6].includes(i)?'rgba(59,130,246,.7)':'rgba(255,77,109,.6)'), borderRadius:4 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{min:0,max:10,grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>v+'h'}}, x:{grid:{display:false}} } }
+    });
+  }
+}
+
+// ─── LIVE VITALS SIMULATION ───────────────────────
+setInterval(() => {
+  const hrEl = document.getElementById('liveHR');
+  const hrvEl = document.getElementById('liveHRV');
+  const spo2El = document.getElementById('liveSPO2');
+  const gluEl = document.getElementById('liveGlu');
+  if (hrEl) hrEl.textContent = 68 + Math.round(Math.random()*10);
+  if (hrvEl) hrvEl.textContent = 32 + Math.round(Math.random()*12);
+  if (spo2El) spo2El.textContent = 96 + Math.round(Math.random()*3);
+  if (gluEl) gluEl.textContent = 100 + Math.round(Math.random()*20);
+}, 3000);
+
+// ─── INIT ─────────────────────────────────────────
+initCharts('home');
+</script>
+</body>
+</html>
